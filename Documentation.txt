@@ -1,0 +1,27 @@
+Create a folder in c:\s2trading named zmqhubresource and keep all the .h, .json and dll files in here.
+
+FeedHandler (Server Side Code)
+------------------------------
+We need to run below exe's on the server, for now the server is 158.69.193.253.
+Later we will run this code on the NSE Server with the code to fetch feed from RAW NSE Feed or Omnesys.
+We have the database on this machine and we fetch and publish the data from this server.
+
+First we need to run the Logger with the below command
+Logger.exe logger.config
+
+Second the publisher will fetch the details from the db and publish it using zmq.
+we can't run from visualstudio, since it needs command line parameters. we need to run the Publisher from command prompt with the below command
+Publisher 1 B publisher.config
+
+OrderManagementV2 (Server Side Code)
+------------------------------------
+
+This program for now we will run on the server (158.69.193.253). 
+Since we have provided this static IP for Fix Order Routing.
+
+ScannerWindowApplication (Client Side Code)
+-------------------------------------------
+
+This program we can run on the client side to display the feeds on scanner.
+Route the orders to OrderManagementV2.
+Fetch the orders from the db and display on the OrderBlotter.
