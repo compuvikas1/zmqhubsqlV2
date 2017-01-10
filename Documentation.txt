@@ -9,13 +9,25 @@ Step 2:
 	THOM.bak
 
 Step 3:
+	Create a odbc data source
+	DSN Name = db2
+	Server = (serverName)	
+	Specify Sql Server Authentication LoginId & Password
+	Database = LPINTRADAY	
+	
+Step 4:
 
 FeedHandler (Server Side Code)
 ------------------------------
 
-	Open the FeedHandler in  Visual Studio 2015
+	Open the FeedHandler in  Visual Studio 2015	
 	Then Change the compilation option to release and cpu mode to x64.
 
+	In the code we need to change the server connection details as provided above for odbc connection.
+	SqlServerClient.cpp line no 79.
+	DSN=db2;DATABASE=LPINTRADAY;UID=sa;PWD=sa123;
+	change the username and password provided for the connection.
+	
 	Rebuild the whole solution.
 
 	For running the exe we need to do the below steps
@@ -25,17 +37,25 @@ FeedHandler (Server Side Code)
 
 		Second we need to run the publisher which will fetch the details from the db and publish it using zmq.
 
-Step 4:
+Step 5:
 OrderManagementV2 (Server Side Code)
 ------------------------------------
+Add Reference for AsyncIO.dll, NetMQ.dll & QuickFix.dll
+C:\s2trading\zmqhubresource\packages\AsyncIO.0.1.20.0\lib\net40\AsyncIO.dll
+C:\s2trading\zmqhubresource\packages\NetMQ.3.3.3.4\lib\net40\NetMQ.dll
+C:\s2trading\zmqhubresource\packages\QuickFix.dll
 
-	This program for now we will run on the server (158.69.193.253). 
-	Since we have provided this static IP for Fix Order Routing.
+Rebuild the solution
+And run the program
 
-Step 5:
+Step 6:
 
 ScannerWindowApplication (Client Side Code)
 -------------------------------------------
+
+Add Reference for AsyncIO.dll, NetMQ.dll & QuickFix.dll
+C:\s2trading\zmqhubresource\packages\AsyncIO.0.1.20.0\lib\net40\AsyncIO.dll
+C:\s2trading\zmqhubresource\packages\NetMQ.3.3.3.4\lib\net40\NetMQ.dll
 
 This program we can run on the client side to display the feeds on scanner.
 Route the orders to OrderManagementV2.
