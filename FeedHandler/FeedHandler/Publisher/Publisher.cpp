@@ -335,8 +335,9 @@ int main(int argc, char *argv[])
 	char errorStr[1000] = { '\0' };
 	int localcnt = 1001;
 	std::string lfilePath = "c:\\s2trading\\zmqhubresource\\";
-	std::string lfiles;
-	std::string configFile;
+	std::string lfiles = "1";
+	std::string configFile = "c:\\s2trading\\zmqhubresource\\publisher.config";
+	/*
 	if (argc > 3) {
 		lfilePath = argv[1];
 		lfiles = argv[2];
@@ -348,7 +349,7 @@ int main(int argc, char *argv[])
 	}
 	else {
 		lfiles = "SPY,GLD,DLD,CET";
-	}
+	}*/
 
 	component = "Feed Publisher";
 	readConfig(configFile);

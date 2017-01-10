@@ -144,7 +144,7 @@ namespace ScannerWindowApplication
                 }
                 catch (Exception e)
                 {
-
+                    Console.WriteLine(e.Message);
                 }
             }
             Console.WriteLine("Thread Stopped");
@@ -319,6 +319,59 @@ namespace ScannerWindowApplication
             {
                 string callput = cmbOptionsCallPut.SelectedItem.ToString();
                 loadStrike(symbol, expiry, callput);
+            }
+        }
+
+        private void splitContainer1_Panel1_DragEnter(object sender, DragEventArgs e)
+        {
+            e.Effect = DragDropEffects.Copy;
+        }
+
+        private void splitContainer1_Panel1_DragDrop(object sender, DragEventArgs e)
+        {
+            if (e.Data.GetDataPresent(typeof(DataRowView)))
+            {
+                // Determine which category the item was draged to                
+                {
+                    // Get references to the category and campaign
+                    DataRowView dataRow = (DataRowView)e.Data.GetData(typeof(DataRowView));
+                    string symbol = (string)dataRow[1];
+                    string expiry = (string)dataRow[2];
+                    string strike = (string)dataRow[3];
+                    string callput = (string)dataRow[4];
+                    string exch = (string)dataRow[5];
+
+                    if (exch == "NFO")
+                    {
+                        strike = "0";
+                        callput = "";
+                        exch = "NFO";
+                        this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
+
+                        cmbFuturesSymbol.SelectedItem = symbol;
+                        loadExpiry(symbol, "NFO");
+                        cmbFuturesSymbol.SelectedItem = expiry;
+
+                        futopt = 1;
+                        tabControl1.SelectedIndex = 1;
+                    }
+                    else if (exch == "NOP")
+                    {
+                        this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
+
+                        cmbOptionsSymbol.SelectedItem = symbol;
+                        cmbOptionsExpiry.SelectedItem = expiry;
+                        cmbOptionsCallPut.SelectedItem = callput;
+
+                        if (cmbOptionsStrike.Items.Count > 0)
+                        {
+                            cmbOptionsStrike.SelectedItem = strike;                            
+                            this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
+                            futopt = 2;
+                            tabControl1.SelectedIndex = 2;
+                        }                        
+                    }
+                }
             }
         }
     }

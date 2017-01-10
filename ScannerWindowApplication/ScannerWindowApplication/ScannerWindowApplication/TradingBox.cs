@@ -59,7 +59,7 @@ namespace ScannerWindowApplication
                 }
                 catch(Exception e)
                 {
-
+                    Console.WriteLine(e.Message);
                 }
             }
             Console.WriteLine("Thread Stopped");
@@ -72,10 +72,10 @@ namespace ScannerWindowApplication
 
         private void btnBuy_Click(object sender, EventArgs e)
         {            
-            string symbol = cmbSymbol.Text;
-            double price = Convert.ToDouble(txtLimitPrice.Text);
-            int qty = Convert.ToInt32(txtQuantity.Text);
-            char action = 'B';
+            //string symbol = cmbSymbol.Text;
+            //double price = Convert.ToDouble(txtLimitPrice.Text);
+            //int qty = Convert.ToInt32(txtQuantity.Text);
+            //char action = 'B';
 
             //int length = symbol.Length;
             //for(int ctr = length; ctr <8; ctr++)
@@ -91,10 +91,10 @@ namespace ScannerWindowApplication
 
         private void btnSell_Click(object sender, EventArgs e)
         {
-            string symbol = cmbSymbol.Text;
-            double price = Convert.ToDouble(txtLimitPrice.Text);
-            int qty = Convert.ToInt32(txtQuantity.Text);
-            char action = 'S';
+            //string symbol = cmbSymbol.Text;
+            //double price = Convert.ToDouble(txtLimitPrice.Text);
+            //int qty = Convert.ToInt32(txtQuantity.Text);
+            //char action = 'S';
 
             //int length = symbol.Length;
             //for (int ctr = length; ctr < 8; ctr++)

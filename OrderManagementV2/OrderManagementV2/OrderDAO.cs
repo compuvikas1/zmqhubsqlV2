@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Data;
 using System.Data.SqlClient;
-
+using System.Configuration;
 
 //TODO: check if conn is not valid, again open teh connection.
 namespace OrderManagementV2
@@ -15,10 +15,10 @@ namespace OrderManagementV2
 
         public OrderDAO()
         {            
-            string DataSource = System.Configuration.ConfigurationSettings.AppSettings.Get("OMDBServer");
-            string Database = System.Configuration.ConfigurationSettings.AppSettings.Get("OMDatabase");
-            string user = System.Configuration.ConfigurationSettings.AppSettings.Get("OMDBUser");
-            string pass = System.Configuration.ConfigurationSettings.AppSettings.Get("OMDBPass");
+            string DataSource = ConfigurationManager.AppSettings.Get("OMDBServer");
+            string Database = ConfigurationManager.AppSettings.Get("OMDatabase");
+            string user = ConfigurationManager.AppSettings.Get("OMDBUser");
+            string pass = ConfigurationManager.AppSettings.Get("OMDBPass");
 
             var builder = new SqlConnectionStringBuilder();
             builder.DataSource = DataSource;
@@ -322,7 +322,7 @@ namespace OrderManagementV2
             try
             {
                 int ver = -1;
-                int id = -1;
+                //int id = -1;
                 int orderID = getNextSeq(orderIDSeq);
                 //getLastVersion(os.OrderNo, ref ver, ref id);
                 if (ver == 0) { ver = 1; } else { ver++; }

@@ -1,23 +1,38 @@
-Create a folder in c:\s2trading named zmqhubresource and keep all the .h, .json and dll files in here.
+Step 1:
+	Copy the ZmqHubResource folder in the c:\s2trading folder.
+
+Step 2:
+	restore the dbbackup on the sqlserver 2012 r2.
+	we need to restore the three databases kept in the folder c:\s2trading\zmqhubresource\dbbackup
+	LPINTRADAY.bak
+	LPRELIABLEMAP.bak
+	THOM.bak
+
+Step 3:
 
 FeedHandler (Server Side Code)
 ------------------------------
-We need to run below exe's on the server, for now the server is 158.69.193.253.
-Later we will run this code on the NSE Server with the code to fetch feed from RAW NSE Feed or Omnesys.
-We have the database on this machine and we fetch and publish the data from this server.
 
-First we need to run the Logger with the below command
-Logger.exe logger.config
+	Open the FeedHandler in  Visual Studio 2015
+	Then Change the compilation option to release and cpu mode to x64.
 
-Second the publisher will fetch the details from the db and publish it using zmq.
-we can't run from visualstudio, since it needs command line parameters. we need to run the Publisher from command prompt with the below command
-Publisher 1 B publisher.config
+	Rebuild the whole solution.
 
+	For running the exe we need to do the below steps
+
+		First we need to run the Logger with the below command
+			Logger.exe logger.config
+
+		Second we need to run the publisher which will fetch the details from the db and publish it using zmq.
+
+Step 4:
 OrderManagementV2 (Server Side Code)
 ------------------------------------
 
-This program for now we will run on the server (158.69.193.253). 
-Since we have provided this static IP for Fix Order Routing.
+	This program for now we will run on the server (158.69.193.253). 
+	Since we have provided this static IP for Fix Order Routing.
+
+Step 5:
 
 ScannerWindowApplication (Client Side Code)
 -------------------------------------------

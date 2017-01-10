@@ -60,7 +60,7 @@ namespace ScannerWindowApplication
 
         public void AddListItemMethod()
         {
-            String myItem;
+            //String myItem;
             if (ScannerBox.qfeed.Count > 0)
             {
                 Feed feed = ScannerBox.qfeed.Dequeue();
@@ -73,7 +73,9 @@ namespace ScannerWindowApplication
                         dtFeed.Rows.Add(new Object[] { feed.feedtime, feed.symbol, feed.expiry, feed.strike, feed.callput, feed.exch, feed.closePrice, feed.ltp, feed.quantity });
                 }
                 catch(Exception e)
-                { }
+                {
+                    Console.WriteLine(e.Message);
+                }
                 //int rowIndex = 0;
                 //Boolean foundRow = false;
 
@@ -171,6 +173,21 @@ namespace ScannerWindowApplication
                 box1.Show();
             }
         }
+
+        private void dataGridView1_MouseDown(object sender, MouseEventArgs e)
+        {
+            if (e.Button == MouseButtons.Right)
+            {
+                DataGridView.HitTestInfo info = dataGridView1.HitTest(e.X, e.Y);
+                if (info.RowIndex >= 0)
+                {
+                    DataRowView view = (DataRowView)
+                           dataGridView1.Rows[info.RowIndex].DataBoundItem;
+                    if (view != null)
+                        dataGridView1.DoDragDrop(view, DragDropEffects.Copy);
+                }
+            }
+        }
     }
 
     public class MyThreadClass
@@ -195,7 +212,7 @@ namespace ScannerWindowApplication
                 }
                 catch (Exception e)
                 {
-
+                    Console.WriteLine(e.Message);
                 }
             }
         }

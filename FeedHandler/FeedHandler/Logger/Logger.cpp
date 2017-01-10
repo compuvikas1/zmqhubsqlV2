@@ -121,7 +121,7 @@ int writeLog(std::string logString){
 
 		result = _stat(logFileName.c_str(), &buf);
 		if (result == 0) {
-			if (buf.st_size > MAXFILESIZE) {
+			if ((unsigned long)buf.st_size > MAXFILESIZE) {
 				getLogFileTimMine(logFileTime);
 				logFileName = LogPath + "\\" + logFileTime + "-Logger.log";
 			}
@@ -140,12 +140,13 @@ int writeLog(std::string logString){
 
 int main(int argc, char **argv)
 {
-	if (argc < 2) {
-		std::cerr << "Usage ./" << argv[0] << " <config path>" << std::endl;
-		exit(0);
-	}
+	//if (argc < 2) {
+	//	std::cerr << "Usage ./" << argv[0] << " <config path>" << std::endl;
+	//	exit(0);
+	//}
 	MAXFILESIZE = 0;
-	readConfig(argv[1]);
+	//readConfig(argv[1]);
+	readConfig("C:\\s2trading\\zmqhubresource\\Logger.config");
 	if (MAXFILESIZE == 0) {
 		MAXFILESIZE = HUNDREDMB;
 	}
@@ -170,7 +171,7 @@ int main(int argc, char **argv)
 			strncpy_s(st, 4000, (char *)message.data(), message.size());
 			stringbuf = stringbuf + "\n" + st;
 			//stringbuf = (char *)message.data();
-			bufSize = stringbuf.length();
+			bufSize = (int)stringbuf.length();
 		}
 		else {
 			int msgSize = 4000;
@@ -178,7 +179,7 @@ int main(int argc, char **argv)
 			strncpy_s(st, 4000, (char *)message.data(), message.size());
 			stringbuf = stringbuf + "\n" + st;
 			//stringbuf = stringbuf + "\n" +(char *)message.data();
-			bufSize = stringbuf.length();
+			bufSize = (int)stringbuf.length();
 		}
 		std::cout << "Received : " << message.size() << " Bytes."<< std::endl;
 	}	

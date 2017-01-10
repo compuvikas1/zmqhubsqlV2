@@ -212,6 +212,7 @@
             // 
             // tabControl1
             // 
+            this.tabControl1.AllowDrop = true;
             this.tabControl1.Controls.Add(this.tabPageStock);
             this.tabControl1.Controls.Add(this.tabPageFuture);
             this.tabControl1.Controls.Add(this.tabPageOption);
@@ -244,6 +245,7 @@
             // 
             // splitContainer1.Panel1
             // 
+            this.splitContainer1.Panel1.AllowDrop = true;
             this.splitContainer1.Panel1.Controls.Add(this.btnStocksCancel);
             this.splitContainer1.Panel1.Controls.Add(this.btnStocksShort);
             this.splitContainer1.Panel1.Controls.Add(this.btnStocksSell);
@@ -279,6 +281,8 @@
             this.splitContainer1.Panel1.Controls.Add(this.label3);
             this.splitContainer1.Panel1.Controls.Add(this.cmbStocksSymbol);
             this.splitContainer1.Panel1.Controls.Add(this.label1);
+            this.splitContainer1.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragDrop);
+            this.splitContainer1.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragEnter);
             // 
             // splitContainer1.Panel2
             // 
@@ -715,6 +719,7 @@
             // 
             // splitContainer3.Panel1
             // 
+            this.splitContainer3.Panel1.AllowDrop = true;
             this.splitContainer3.Panel1.Controls.Add(this.richTextBox1);
             this.splitContainer3.Panel1.Controls.Add(this.cmbFuturesExpiry);
             this.splitContainer3.Panel1.Controls.Add(this.label31);
@@ -753,6 +758,8 @@
             this.splitContainer3.Panel1.Controls.Add(this.label29);
             this.splitContainer3.Panel1.Controls.Add(this.cmbFuturesSymbol);
             this.splitContainer3.Panel1.Controls.Add(this.label30);
+            this.splitContainer3.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragDrop);
+            this.splitContainer3.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragEnter);
             // 
             // splitContainer3.Panel2
             // 
@@ -1242,6 +1249,7 @@
             // 
             // splitContainer5.Panel1
             // 
+            this.splitContainer5.Panel1.AllowDrop = true;
             this.splitContainer5.Panel1.Controls.Add(this.txtOptionsDisplayQty);
             this.splitContainer5.Panel1.Controls.Add(this.btnOptionsSell);
             this.splitContainer5.Panel1.Controls.Add(this.txtOptionsPrice);
@@ -1272,6 +1280,8 @@
             this.splitContainer5.Panel1.Controls.Add(this.label33);
             this.splitContainer5.Panel1.Controls.Add(this.cmbOptionsSymbol);
             this.splitContainer5.Panel1.Controls.Add(this.label32);
+            this.splitContainer5.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragDrop);
+            this.splitContainer5.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.splitContainer1_Panel1_DragEnter);
             // 
             // splitContainer5.Panel2
             // 
@@ -1656,6 +1666,7 @@
             // 
             // TradingBoxV2
             // 
+            this.AllowDrop = true;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(778, 508);

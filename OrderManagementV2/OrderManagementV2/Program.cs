@@ -20,8 +20,8 @@ namespace OrderManagementV2
         QuickFix.Transport.SocketInitiator initiator;
         QuickFix.IApplication myApp;
         QuickFix.SessionSettings settings;
-        private int g_nCounter;
-        private string traderAccount;
+        //private int g_nCounter;
+        //private string traderAccount;
 
         [StructLayout(LayoutKind.Sequential)]
         public class SYSTEMTIME
@@ -41,7 +41,7 @@ namespace OrderManagementV2
 
         public void initFix()
         {
-            settings = new QuickFix.SessionSettings(@"tradeclient.cfg");
+            settings = new QuickFix.SessionSettings(@"c:\s2trading\zmqhubresource\tradeclient.cfg");
             myApp = new FixClient();
             FileStoreFactory storeFactory = new FileStoreFactory(settings);
             FileLogFactory logFactory = new FileLogFactory(settings);
@@ -65,8 +65,8 @@ namespace OrderManagementV2
             fixApp fx = new fixApp();
             fx.initFix();
 
-            string OMServer = System.Configuration.ConfigurationSettings.AppSettings.Get("OMServer");
-            string OMServerPort = System.Configuration.ConfigurationSettings.AppSettings.Get("OMServerPort");
+            string OMServer = ConfigurationManager.AppSettings.Get("OMServer");
+            string OMServerPort = ConfigurationManager.AppSettings.Get("OMServerPort");
 
             IPAddress ipaddr = IPAddress.Parse(OMServer);
             TcpListener serverSocket = new TcpListener(ipaddr, Convert.ToInt32(OMServerPort));

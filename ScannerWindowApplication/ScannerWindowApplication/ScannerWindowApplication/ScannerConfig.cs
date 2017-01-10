@@ -101,7 +101,7 @@ namespace ScannerWindowApplication
             }
             catch(Exception ex)
             {
-
+                Console.WriteLine(ex.Message);
             }
         }
 
@@ -156,7 +156,7 @@ namespace ScannerWindowApplication
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Please enter valid ClosePrice (decimal numbers) ");
+                        MessageBox.Show("Please enter valid ClosePrice (decimal numbers) " + ex.Message);
                         return;
                     }
 
@@ -171,7 +171,7 @@ namespace ScannerWindowApplication
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Please enter valid LTP (numbers) ");
+                        MessageBox.Show("Please enter valid LTP (numbers) " + ex.Message);
                         return;
                     }
 
@@ -186,7 +186,7 @@ namespace ScannerWindowApplication
                     }
                     catch (Exception ex)
                     {
-                        MessageBox.Show("Please enter valid Quantity (numbers) ");
+                        MessageBox.Show("Please enter valid Quantity (numbers) " + ex.Message);
                         return;
                     }
 

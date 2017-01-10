@@ -1,2 +1,0 @@
-NIFTY,NFO,,,,,0,0,0,True
-NIFTY,NOP,,,,,0,0,0,True
