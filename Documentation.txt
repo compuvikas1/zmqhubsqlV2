@@ -1,5 +1,9 @@
+Pre-requisites
+	Visual Studio 2015
+	Sql Server 2012 R2 Express Edition
+
 Step 1:
-	Copy the ZmqHubResource folder in the c:\s2trading folder.
+	Copy the ZmqHubResource folder in the c:\s2trading folder. This folder contains all the common files required for builing the application.
 
 Step 2:
 	restore the dbbackup on the sqlserver 2012 r2.
