@@ -37,16 +37,20 @@ namespace ScannerWindowApplication
                 //}
 
                 //var query = "select distinct symbol from LPINTRADAY.dbo.vwFeed  order by symbol asc";
-                var query = "select distinct symbol from LPINTRADAY.dbo.vwFeed where symbol in ('NIFTY','BANKNIFTY','RELIANCE','SBIN','RCOM','AXISBANK','LT','INFY','DLF','SUNPHARMA') order by symbol asc";
-                var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
+                //var query = "select distinct symbol from LPINTRADAY.dbo.vwFeed where symbol in ('NIFTY','BANKNIFTY','RELIANCE','SBIN','RCOM','AXISBANK','LT','INFY','DLF','SUNPHARMA') order by symbol asc";
+                //var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
 
-                DataRow curRow;
+                //DataRow curRow;
 
-                for (var i = 0; i < ohlcdt.Rows.Count; i++)
-                {
-                    curRow = ohlcdt.Rows[i];
-                    cmbSymbol.Items.Add(curRow[0].ToString().Trim());
-                }
+                //for (var i = 0; i < ohlcdt.Rows.Count; i++)
+                //{
+                //    curRow = ohlcdt.Rows[i];
+                //    cmbSymbol.Items.Add(curRow[0].ToString().Trim());
+                //}
+
+                //fetch symbol names from the dictionary
+                var symbolList = ScannerDashboard.dictSecurityMaster.Select(x => x.Value.symbol).Distinct().ToList();
+                cmbSymbol.Items.AddRange(symbolList.ToArray());
 
                 var filterLines = File.ReadAllLines("filterconfig.txt");
 
@@ -308,8 +312,6 @@ namespace ScannerWindowApplication
             var symbol = cmbSymbol.SelectedItem.ToString();
             var exch = cmbExch.SelectedItem.ToString();            
 
-            var query = "select distinct series from LPINTRADAY.dbo.vwFeed where symbol = '" + symbol + "' and exch = '" + cmbExch.SelectedItem + "'";
-
             cmbSymbolType.Items.Clear();
             cmbExpiry.Items.Clear();
             cmbOptType.Items.Clear();
@@ -320,21 +322,28 @@ namespace ScannerWindowApplication
             cmbOptType.Text = "";
             cmbStrike.Text = "";
 
-            var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
+            //var query = "select distinct series from LPINTRADAY.dbo.vwFeed where symbol = '" + symbol + "' and exch = '" + cmbExch.SelectedItem + "'";
+            //var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
 
-            DataRow curRow;
+            //DataRow curRow;
 
-            for (var i = 0; i < ohlcdt.Rows.Count; i++)
-            {
-                curRow = ohlcdt.Rows[i];
-                cmbSymbolType.Items.Add(curRow[0].ToString().Trim());
-            }
+            //for (var i = 0; i < ohlcdt.Rows.Count; i++)
+            //{
+            //    curRow = ohlcdt.Rows[i];
+            //    cmbSymbolType.Items.Add(curRow[0].ToString().Trim());
+            //}
+
+            var symbolType = ScannerDashboard.dictSecurityMaster.Where(x=>x.Value.symbol == symbol && x.Value.exch == exch).Select(x => x.Value.series).Distinct().ToList();
+            cmbSymbolType.Items.AddRange(symbolType.ToArray());
         }
 
         private void cmbSymbolType_SelectedIndexChanged(object sender, EventArgs e)
         {
             var symbol = cmbSymbol.SelectedItem.ToString();
-            var query = "select distinct CONVERT(VARCHAR(10),ExpiryDate,105) expDate from LPINTRADAY.dbo.vwFeed where symbol = '" + symbol + "' and exch = '" + cmbExch.SelectedItem +"'";
+            var exch = cmbExch.SelectedItem.ToString();
+            var symbolType = cmbSymbolType.SelectedItem.ToString();
+
+            /*var query = "select distinct CONVERT(VARCHAR(10),ExpiryDate,105) expDate from LPINTRADAY.dbo.vwFeed where symbol = '" + symbol + "' and exch = '" + cmbExch.SelectedItem +"'";
             //for NFO no OptType & Strike
             if (cmbExch.SelectedItem.ToString() == "NOP")
             {                
@@ -343,9 +352,8 @@ namespace ScannerWindowApplication
             }
 
             query = query + " order by expDate";
-
+                        
             cmbExpiry.Items.Clear();
-
             var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
 
             DataRow curRow;
@@ -358,6 +366,24 @@ namespace ScannerWindowApplication
                 DateTime dt1 = DateTime.ParseExact(curRow[0].ToString().Substring(0, 10), "yyyy-MM-dd", CultureInfo.InvariantCulture);
                 cmbExpiry.Items.Add(dt1.ToString("yyyy-MM-dd"));
             }
+*/
+            cmbExpiry.Items.Clear();
+            if (cmbExch.SelectedItem.ToString() == "NOP")
+            {
+                if (cmbSymbolType.SelectedItem != null)
+                {
+                    var expiryList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch && x.Value.series == symbolType).Select(x => x.Value.expiry).Distinct().ToList();
+                    cmbExpiry.Items.AddRange(expiryList.ToArray());
+                }                    
+            }            
+            else
+            {
+                if (cmbSymbolType.SelectedItem != null)
+                {
+                    var expiryList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch && x.Value.series == symbolType).Select(x => x.Value.expiry).Distinct().ToList();
+                    cmbExpiry.Items.AddRange(expiryList.ToArray());
+                }
+            }
         }
 
         private void cmbExpiry_SelectedIndexChanged(object sender, EventArgs e)
@@ -369,6 +395,7 @@ namespace ScannerWindowApplication
                 var series = cmbSymbolType.SelectedItem.ToString();
                 var expiry = cmbExpiry.SelectedItem.ToString();
 
+                /*
                 DateTime dt1 = DateTime.ParseExact(expiry, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
                 var query = "select distinct OptType from LPINTRADAY.dbo.vwFeed where symbol = '"
@@ -387,6 +414,11 @@ namespace ScannerWindowApplication
                     curRow = ohlcdt.Rows[i];
                     cmbOptType.Items.Add(curRow[0].ToString());
                 }
+                */
+
+                cmbOptType.Items.Clear();
+                var optionList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch && x.Value.series == series && x.Value.expiry == expiry).Select(x => x.Value.opttype).Distinct().ToList();
+                cmbOptType.Items.AddRange(optionList.ToArray());
             }
         }
 
@@ -398,6 +430,7 @@ namespace ScannerWindowApplication
             var expiry = cmbExpiry.SelectedItem.ToString();
             var opttype = cmbOptType.SelectedItem.ToString();
 
+            /*
             DateTime dt1 = DateTime.ParseExact(expiry, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             var query = "select distinct strikePrice from LPINTRADAY.dbo.vwFeed where symbol = '" 
@@ -418,6 +451,11 @@ namespace ScannerWindowApplication
                 curRow = ohlcdt.Rows[i];
                 cmbStrike.Items.Add(curRow[0].ToString());
             }
+            */
+            cmbStrike.Items.Clear();
+            cmbStrike.Text = "";
+            var strikeList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch && x.Value.series == series && x.Value.expiry == expiry && x.Value.opttype == opttype).Select(x => x.Value.strike).Distinct().ToList();
+            cmbStrike.Items.AddRange(strikeList.ToArray());
         }
 
         

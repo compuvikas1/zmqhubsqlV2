@@ -29,16 +29,20 @@ namespace ScannerWindowApplication
                 }
             }
 
-            if (toks[0].Equals("INS") && toks.Length >= 7)
+            if (toks[0].Equals("INS") && toks.Length >= 11)
             {
                 ord.methodID = 1;
                 ord.symbol = symbol.ToCharArray();
                 ord.OrderStatus = "NEW00000".ToCharArray();
                 ord.price = (float)Convert.ToDouble(toks[2].ToString());
                 ord.quantity = (float)Convert.ToDouble(toks[3].ToString());
-                ord.direction = toks[4][0];
-                ord.machineID = toks[5].ToCharArray();
-                ord.userID = toks[6].ToCharArray();
+                ord.strike = (int)Convert.ToDecimal(toks[4].ToString());
+                ord.direction = toks[5][0];
+                ord.expiry = toks[6].ToCharArray();
+                ord.callput = toks[7].ToCharArray();
+                ord.exch = toks[8].ToCharArray();
+                ord.machineID = toks[9].ToCharArray();
+                ord.userID = toks[10].ToCharArray();
             }
             else if (toks[0].Equals("CAN") && toks.Length >= 3)
             {
@@ -46,7 +50,7 @@ namespace ScannerWindowApplication
                 ord.symbol = symbol.ToCharArray();
                 ord.OrderNo = (int)Convert.ToDecimal(toks[2].ToString());
             }
-            else if (toks[0].Equals("AMD") && toks.Length >= 8)
+            else if (toks[0].Equals("AMD") && toks.Length >= 12)
             {
                 ord.methodID = 3;
                 ord.symbol = symbol.ToCharArray();
@@ -54,9 +58,13 @@ namespace ScannerWindowApplication
                 ord.OrderNo = (int)Convert.ToDecimal(toks[2].ToString());
                 ord.price = (float)Convert.ToDouble(toks[3].ToString());
                 ord.quantity = (float)Convert.ToDouble(toks[4].ToString());
-                ord.direction = toks[5][0];
-                ord.machineID = toks[6].ToCharArray();
-                ord.userID = toks[7].ToCharArray();
+                ord.strike = (int)Convert.ToDecimal(toks[5].ToString());
+                ord.direction = toks[6][0];
+                ord.expiry = toks[7].ToCharArray();
+                ord.callput = toks[8].ToCharArray();
+                ord.exch = toks[9].ToCharArray();
+                ord.machineID = toks[10].ToCharArray();
+                ord.userID = toks[11].ToCharArray();
             }
         }
 
@@ -90,7 +98,7 @@ namespace ScannerWindowApplication
             }
         }
 
-        public static bool insertOrder(string symbol, double price, int qty, char action, TradingBoxV2 tb)
+        public static bool insertOrder(string symbol, string expiry, string callput, string exch, string strike,  double price, int qty, char action, TradingBoxV2 tb)
         {
             tradingBox = tb;
             try
@@ -109,7 +117,7 @@ namespace ScannerWindowApplication
                 Byte[] sendBytes = null;
 
                 //stringToStruct("INS:AAPL0000:111.90:1:B:21:25", ref os);
-                string input = "INS:" + symbol + ":" + price + ":" + qty + ":" + action + ":" + MachineGuid + ":" + UserGuid;
+                string input = "INS:" + symbol + ":" + price + ":" + qty+ ":" + strike + ":" + action + ":" + expiry + ":" + callput + ":" + exch +":" + MachineGuid + ":" + UserGuid;
                 tradingBox.displayTextArea(input);
 
                 OrderStruct os = new OrderStruct(8, 8);

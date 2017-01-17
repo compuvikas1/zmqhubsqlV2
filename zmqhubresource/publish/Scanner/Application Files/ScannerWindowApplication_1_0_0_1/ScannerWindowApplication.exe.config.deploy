@@ -1,0 +1,13 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<configuration>
+  <connectionStrings>  
+    <add name="ConnStr" connectionString="Data Source=VPS104139\SQLEXPRESS;Initial Catalog=LPIntraDay;Persist Security Info=True;User ID=sa;Password=sa123" providerName="System.Data.SqlClient" />  
+  </connectionStrings>
+  <startup> 
+    <supportedRuntime version="v4.0" sku=".NETFramework,Version=v4.5.2" />
+  </startup>
+  <appSettings>
+    <add key="publisherIP" value="158.69.193.253"/>
+    <add key="publisherPort" value="5551"/>
+  </appSettings>
+</configuration>

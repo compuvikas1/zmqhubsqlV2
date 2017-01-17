@@ -5,14 +5,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-
+using System.Configuration;
 
 namespace ScannerWindowApplication
 {
     class Subscriber
     {
         public static Dictionary<string, string> dictFeedDetails = new Dictionary<string, string>();
-
+        String publisherIP = "";
+        String publisherPort = "";
         ScannerDashboard parentSD;
         public Subscriber(ScannerDashboard sd) { parentSD = sd; }
         public void ThreadB()
@@ -26,7 +27,9 @@ namespace ScannerWindowApplication
                 using (var subSocket = new SubscriberSocket())
                 {
                     subSocket.Options.ReceiveHighWatermark = 1000;
-                    subSocket.Connect("tcp://127.0.0.1:5551");
+                    publisherIP = ConfigurationManager.AppSettings["publisherIP"];
+                    publisherPort = ConfigurationManager.AppSettings["publisherPort"];
+                    subSocket.Connect("tcp://"+ publisherIP+":" + publisherPort);
                     //subSocket.SubscribeToAnyTopic();
                     if (parentSD.dictFilters.Count == 0)
                     {

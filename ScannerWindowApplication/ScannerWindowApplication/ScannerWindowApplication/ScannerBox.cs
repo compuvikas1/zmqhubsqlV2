@@ -31,18 +31,22 @@ namespace ScannerWindowApplication
                 var colTime = dtFeed.Columns.Add("Time");
                 var colSymbol = dtFeed.Columns.Add("Symbol");
                 var colExpiry = dtFeed.Columns.Add("Expiry");
-                var colStrike = dtFeed.Columns.Add("Strike");
+                var colStrike = dtFeed.Columns.Add("Strike", typeof(int));
                 var colPC = dtFeed.Columns.Add("PC");
                 var colExch = dtFeed.Columns.Add("Exch");
-                var colClosePrice = dtFeed.Columns.Add("ClosePrice");
-                var colLTP = dtFeed.Columns.Add("LTP");
-                var colQuantity = dtFeed.Columns.Add("Quantity");
+                var colClosePrice = dtFeed.Columns.Add("ClosePrice", typeof(double));
+                var colLTP = dtFeed.Columns.Add("LTP", typeof(double));
+                var colQuantity = dtFeed.Columns.Add("Quantity", typeof(int));
 
                 // set primary key constain so we can search for specific rows
                 dtFeed.PrimaryKey = new[] { colSymbol, colExpiry, colStrike, colPC, colExch };
             }
 
             dataGridView1.DataSource = dtFeed;
+            foreach (DataGridViewColumn column in dataGridView1.Columns)
+            {
+                column.SortMode = DataGridViewColumnSortMode.Automatic;
+            }
 
             parentSD = sd;            
             ScannerBox.openedMainForm = true;
@@ -71,6 +75,7 @@ namespace ScannerWindowApplication
                         exisiting.ItemArray = new object[] { feed.feedtime, feed.symbol, feed.expiry, feed.strike, feed.callput, feed.exch, feed.closePrice, feed.ltp, feed.quantity };
                     else
                         dtFeed.Rows.Add(new Object[] { feed.feedtime, feed.symbol, feed.expiry, feed.strike, feed.callput, feed.exch, feed.closePrice, feed.ltp, feed.quantity });
+                    
                 }
                 catch(Exception e)
                 {
@@ -193,6 +198,7 @@ namespace ScannerWindowApplication
     public class MyThreadClass
     {
         ScannerBox myFormControl1;
+
         public MyThreadClass(ScannerBox myForm)
         {
             myFormControl1 = myForm;
@@ -208,7 +214,6 @@ namespace ScannerWindowApplication
                 try
                 {
                     myFormControl1.Invoke(myFormControl1.myDelegate);
-
                 }
                 catch (Exception e)
                 {

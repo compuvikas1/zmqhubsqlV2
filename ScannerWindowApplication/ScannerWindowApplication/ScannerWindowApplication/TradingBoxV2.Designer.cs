@@ -1,4 +1,7 @@
-﻿namespace ScannerWindowApplication
+﻿using System;
+using System.Windows.Forms;
+
+namespace ScannerWindowApplication
 {
     partial class TradingBoxV2
     {
@@ -223,6 +226,7 @@
             this.tabControl1.SelectedIndex = 0;
             this.tabControl1.Size = new System.Drawing.Size(778, 508);
             this.tabControl1.TabIndex = 0;
+            this.tabControl1.MouseDown += new System.Windows.Forms.MouseEventHandler(this.tabControl1_MouseDown);
             // 
             // tabPageStock
             // 
@@ -1713,6 +1717,11 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
             this.ResumeLayout(false);
 
+        }
+
+        private void splitContainer1_Panel1_MouseDown(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         #endregion

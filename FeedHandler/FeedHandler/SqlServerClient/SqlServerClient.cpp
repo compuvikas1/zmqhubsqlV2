@@ -57,7 +57,7 @@ int main() {
 		exit(0);
 	}
 	SQLWCHAR retconstring[1024];
-	retcode = SQLDriverConnectW( sqlconnectionhandle,NULL,L"DSN=db1; SERVER=SONY-VAIO;DATABASE=LPIntraDay;UID=zmq1;PWD=test123;", SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_COMPLETE);
+	//retcode = SQLDriverConnectW( sqlconnectionhandle,NULL,L"DSN=db1; SERVER=SONY-VAIO;DATABASE=LPIntraDay;UID=zmq1;PWD=test123;", SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_COMPLETE);
 	//retcode = SQLDriverConnect(sqlconnectionhandle, NULL, (SQLWCHAR*)"DRIVER={ODBC Driver 11 for SQL Server};SERVER=SONY-VAIO,1433;DATABASE=test;Trusted_Connection=Yes;UID=zmq1;PWD=test123;", SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_PROMPT);
 	//retcode = SQLDriverConnect(sqlconnectionhandle, NULL, (SQLWCHAR*)"DRIVER={SQL Server Native Client 10.0};SERVER=SONY-VAIO\\SQLEXPRESS,1433;DATABASE=LPIntraDay;UID=zmq1;PWD=test123;", SQL_NTS, retconstring, 1024, NULL, SQL_DRIVER_NOPROMPT);
 	

@@ -14,7 +14,7 @@ namespace OrderManagementV2
         private SqlConnection conn;
 
         public OrderDAO()
-        {            
+        {
             string DataSource = ConfigurationManager.AppSettings.Get("OMDBServer");
             string Database = ConfigurationManager.AppSettings.Get("OMDatabase");
             string user = ConfigurationManager.AppSettings.Get("OMDBUser");
@@ -31,7 +31,7 @@ namespace OrderManagementV2
 
         private void refreshConnection()
         {
-            if(conn.State != ConnectionState.Open)
+            if (conn.State != ConnectionState.Open)
             {
                 conn.Close();
                 conn.Open();
@@ -95,7 +95,7 @@ namespace OrderManagementV2
                 using (var cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
-                    string query = "select id, version from orders where version = (select max(version) from orders where orderNo = "+orderNo+") and orderNo = "+orderNo+";";
+                    string query = "select id, version from orders where version = (select max(version) from orders where orderNo = " + orderNo + ") and orderNo = " + orderNo + ";";
                     cmd.CommandText = query;
                     Console.WriteLine("query : {0}", query);
                     using (var reader = cmd.ExecuteReader())
@@ -109,7 +109,7 @@ namespace OrderManagementV2
                         }
                     }
                 }
-                Console.WriteLine("OrderNo : "+orderNo+" ver : "+ver+ " id : "+id);
+                Console.WriteLine("OrderNo : " + orderNo + " ver : " + ver + " id : " + id);
                 return 0;
             }
             catch (Exception ex)
@@ -127,15 +127,15 @@ namespace OrderManagementV2
                 using (var cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
-                    string query = "select OrderNo from orders where ID = "+orderNo;
-                    
+                    string query = "select OrderNo from orders where ID = " + orderNo;
+
                     cmd.CommandText = query;
                     using (var reader = cmd.ExecuteReader())
                     {
                         while (reader.Read())
                         {
                             var tmp = reader["OrderNo"];
-                            if (tmp != DBNull.Value) { orderID = Convert.ToInt32(tmp); } else { orderID = -1; }                            
+                            if (tmp != DBNull.Value) { orderID = Convert.ToInt32(tmp); } else { orderID = -1; }
                         }
                     }
                 }
@@ -190,12 +190,12 @@ namespace OrderManagementV2
             return -1;
         }
 
-        private string sanitiseField(char []field)
+        private string sanitiseField(char[] field)
         {
             string data = new string(field);
             if (data.Contains("#"))
-            {                
-                return new string (data.Substring(0, data.IndexOf('#')).ToCharArray());
+            {
+                return new string(data.Substring(0, data.IndexOf('#')).ToCharArray());
             }
             return data;
         }
@@ -208,16 +208,20 @@ namespace OrderManagementV2
                 string OrderStatus = "";
                 string symbol = "";
                 float price = 0;
-                float quantity =0;
+                float quantity = 0;
+                int strike = 0;
                 char direction = 'N';
                 int version = 0;
+                string expiry = "";
+                string callput = "";
+                string exch = "";
                 string machineID = "";
                 string userID = "";
 
                 using (var cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
-                    string query = "select ID,OrderStatus,symbol,price,quantity,direction,version,machineID,userID from orders where version = (select max(version) from orders where orderNo = " + orderNo+") and orderNo = "+orderNo+";";
+                    string query = "select ID,OrderStatus,symbol,price,strike,quantity,direction,version,expiry,callput,exch,machineID,userID from orders where version = (select max(version) from orders where orderNo = " + orderNo + ") and orderNo = " + orderNo + ";";
                     cmd.CommandText = query;
                     using (var reader = cmd.ExecuteReader())
                     {
@@ -227,9 +231,13 @@ namespace OrderManagementV2
                             tmp = reader["OrderStatus"]; if (tmp != DBNull.Value) { OrderStatus = Convert.ToString(tmp); } else { OrderStatus = ""; }
                             tmp = reader["symbol"]; if (tmp != DBNull.Value) { symbol = Convert.ToString(tmp); } else { symbol = ""; }
                             tmp = reader["price"]; if (tmp != DBNull.Value) { price = (float)Convert.ToDouble(tmp); } else { price = 0; }
+                            tmp = reader["id"]; if (tmp != DBNull.Value) { strike = Convert.ToInt32(tmp); } else { strike = 0; }
                             tmp = reader["quantity"]; if (tmp != DBNull.Value) { quantity = (float)Convert.ToDouble(tmp); } else { quantity = 0; }
                             tmp = reader["direction"]; if (tmp != DBNull.Value) { direction = Convert.ToChar(tmp); } else { direction = 'N'; }
                             tmp = reader["version"]; if (tmp != DBNull.Value) { version = Convert.ToInt32(tmp); } else { version = 0; }
+                            tmp = reader["expiry"]; if (tmp != DBNull.Value) { expiry = Convert.ToString(tmp); } else { expiry = ""; }
+                            tmp = reader["callput"]; if (tmp != DBNull.Value) { callput = Convert.ToString(tmp); } else { callput = ""; }
+                            tmp = reader["exch"]; if (tmp != DBNull.Value) { exch = Convert.ToString(tmp); } else { exch = ""; }
                             tmp = reader["machineID"]; if (tmp != DBNull.Value) { machineID = Convert.ToString(tmp); } else { machineID = ""; }
                             tmp = reader["userID"]; if (tmp != DBNull.Value) { userID = Convert.ToString(tmp); } else { userID = ""; }
                         }
@@ -242,9 +250,9 @@ namespace OrderManagementV2
                     int orderID = getNextSeq(orderIDSeq);
                     //int orderNo = getNextSeq(orderSeq);
                     Console.WriteLine("Next Seq : {0}", orderNo);
-                    string query = "INSERT INTO ORDERS (ID, OrderNo, OrderStatus,symbol,price, quantity,direction,version,machineID,userID,insertTS) VALUES ("
-                        + orderID + "," + orderNo + "," + "'COMPLETED'" + "," + "'" + symbol + "'" + "," + price + "," + quantity + ",'" + direction + "',"+ version +",'"
-                        + machineID + "','" + userID + "',SYSDATETIME());";
+                    string query = "INSERT INTO ORDERS (ID, OrderNo, OrderStatus,symbol,price, strike, quantity,direction,version,callput, exch, machineID,userID,insertTS) VALUES ("
+                        + orderID + "," + orderNo + "," + "'COMPLETED'" + "," + "'" + symbol + "'" + "," + price + "," + strike + "," + quantity
+                        + ",'" + direction + "'," + version + ",'" + callput + "','" + exch + "','" + machineID + "','" + userID + "',SYSDATETIME());";
                     cmd.CommandText = query;
                     Console.WriteLine("query : {0}", query);
                     cmd.ExecuteNonQuery();
@@ -269,9 +277,10 @@ namespace OrderManagementV2
                     int orderNo = getNextSeq(orderSeq);
                     Console.WriteLine("Next Seq : {0}", orderNo);
                     string symbol = sanitiseField(os.symbol);
-                    string query = "INSERT INTO ORDERS (ID, OrderNo, OrderStatus,symbol,price, quantity,direction,version,machineID,userID,insertTS) VALUES ("
-                        + orderID + "," + orderNo + "," + "'NEW'" + "," + "'"+ symbol +"'" + "," + os.price + "," + os.quantity + ",'" + os.direction + "',1,'"
-                        + new string (os.machineID) + "','" + new string (os.userID) + "',SYSDATETIME());";
+                    string query = "INSERT INTO ORDERS (ID, OrderNo, OrderStatus,symbol,price, strike, quantity,direction,version,expiry,callput, exch, machineID,userID,insertTS) VALUES ("
+                        + orderID + "," + orderNo + "," + "'NEW'" + "," + "'" + symbol + "'" + "," + os.price + "," + os.strike + "," + os.quantity + ",'"
+                        + os.direction + "',1,'" + new string(os.expiry) + "','" + new string(os.callput) + "','" + new string(os.exch) + "','" + new string(os.machineID)
+                        + "','" + new string(os.userID) + "',SYSDATETIME());";
                     cmd.CommandText = query;
                     Console.WriteLine("query : {0}", query);
                     cmd.ExecuteNonQuery();
@@ -284,7 +293,7 @@ namespace OrderManagementV2
             }
             return -1;
         }
-        
+
         public int amendOrder(ref OrderStruct os)//Update the previouss and add new
         {
             try
@@ -294,16 +303,17 @@ namespace OrderManagementV2
                 int ver = -1;
                 int id = -1;
                 getLastVersion(orderNo, ref ver, ref id);
-                Console.WriteLine("DBG: "+orderNo+" : "+ver+" : "+id);
-                if(ver == 0) { ver = 1; } else { ver++; }
-                Console.WriteLine("DBG: "+orderNo + " : " + ver + " : " + id);
+                Console.WriteLine("DBG: " + orderNo + " : " + ver + " : " + id);
+                if (ver == 0) { ver = 1; } else { ver++; }
+                Console.WriteLine("DBG: " + orderNo + " : " + ver + " : " + id);
                 using (var cmd = new SqlCommand())
                 {
                     cmd.Connection = conn;
                     string symbol = sanitiseField(os.symbol);
-                    string query = "INSERT INTO ORDERS (ID,OrderNo,LinkedOrderID,OrderStatus,symbol,price, quantity,direction,version,machineID,userID,insertTS) VALUES ("
-                        + orderID + "," + orderNo +"," + id + "," + "'AMEND'" + ",'" + symbol + "'," + os.price + "," + os.quantity + ",'" + os.direction + "',"
-                        + ver + ",'" + new string(os.machineID) + "','" + new string(os.userID) + "',SYSDATETIME());";
+                    string query = "INSERT INTO ORDERS (ID,OrderNo,LinkedOrderID,OrderStatus,symbol,price, strike, quantity,direction,version,expiry,callput,exch,machineID,userID,insertTS) VALUES ("
+                        + orderID + "," + orderNo + "," + id + "," + "'AMEND'" + ",'" + symbol + "'," + os.price + "," + os.quantity + ",'" + os.direction + "',"
+                        + ver + ",'" + new string(os.expiry) + "','" + new string(os.callput) + "','" + new string(os.exch) + "','" + new string(os.machineID) + "','"
+                        + new string(os.userID) + "',SYSDATETIME());";
                     cmd.CommandText = query;
                     Console.WriteLine("query : {0}", query);
                     cmd.ExecuteNonQuery();
@@ -322,7 +332,7 @@ namespace OrderManagementV2
             try
             {
                 int ver = -1;
-                //int id = -1;
+                int id = -1;
                 int orderID = getNextSeq(orderIDSeq);
                 //getLastVersion(os.OrderNo, ref ver, ref id);
                 if (ver == 0) { ver = 1; } else { ver++; }
@@ -333,9 +343,10 @@ namespace OrderManagementV2
                 {
                     cmd.Connection = conn;
                     string symbol = sanitiseField(os.symbol);
-                    string query = "INSERT INTO ORDERS (ID,OrderNo,LinkedOrderID,OrderStatus,symbol,price, quantity,direction,version,machineID,userID,insertTS) VALUES ("
-                        + orderID + "," + os.OrderNo + "," + os.ID +  "," + "'CANCELED'" + ",'" + symbol + "'," + os.price + "," + os.quantity + ",'" + os.direction + "',"
-                        + os.version + ",'" + new string(os.machineID) + "','" + new string(os.userID) + "',SYSDATETIME());";
+                    string query = "INSERT INTO ORDERS (ID,OrderNo,LinkedOrderID,OrderStatus,symbol,price, strike, quantity,direction,version,expiry, callput, exch, machineID,userID,insertTS) VALUES ("
+                        + orderID + "," + os.OrderNo + "," + os.ID + "," + "'CANCELED'" + ",'" + symbol + "'," + os.price + "," + os.strike + "," + os.quantity + ",'"
+                        + os.direction + "'," + os.version + ",'" + new string(os.expiry) + "','" + new string(os.callput) + "','" + new string(os.exch) + "','"
+                        + new string(os.machineID) + "','" + new string(os.userID) + "',SYSDATETIME());";
                     cmd.CommandText = query;
                     Console.WriteLine("query : {0}", query);
                     cmd.ExecuteNonQuery();
@@ -349,7 +360,7 @@ namespace OrderManagementV2
             return -1;
         }
 
-        
+
         public int addOrderFills(OrderFillStruct ofs)
         {
             int orderNo = -1;
@@ -366,7 +377,7 @@ namespace OrderManagementV2
                     cmd.CommandText = query;
                     cmd.ExecuteNonQuery();
                 }
-                if((ordStatus = fillStatus(orderNo)) == 0) // Order completed. Make Insert.
+                if ((ordStatus = fillStatus(orderNo)) == 0) // Order completed. Make Insert.
                 {
                     insertOrderWithOrdeNO(orderNo);
                 }
@@ -399,7 +410,8 @@ namespace OrderManagementV2
                         }
                     }
                 }
-            } catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Console.Write("Exception(getOrderStatusFromDB) : " + ex.Message);
             }
@@ -442,9 +454,10 @@ namespace OrderManagementV2
                     }
                 }
                 return 0;
-            }catch(Exception e)
+            }
+            catch (Exception e)
             {
-                Console.WriteLine("Exception(getOrderStatusFromDB) : " + e.Message +"\n"+ e.StackTrace);
+                Console.WriteLine("Exception(getOrderStatusFromDB) : " + e.Message + "\n" + e.StackTrace);
                 return -1;
             }
         }

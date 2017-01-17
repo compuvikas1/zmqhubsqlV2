@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Configuration;
+using System.IO;
 
 namespace ScannerWindowApplication
 {
@@ -20,14 +21,43 @@ namespace ScannerWindowApplication
         public string topics { get; set; }
         //public Dictionary<string, SymbolFilter> dictFilters = new Dictionary<string, SymbolFilter>();
         public Dictionary<string, List<SymbolFilter>> dictFilters = new Dictionary<string, List<SymbolFilter>>();
+        public static Dictionary<string, SecurityMaster> dictSecurityMaster = new Dictionary<string, SecurityMaster>();
+        
+        public void loadSecurityMaster()
+        {
+            string []lines = File.ReadAllLines(@"C:\s2trading\zmqhubresource\SecurityMaster.csv");
+            foreach(string line in lines)
+            {
+                if (line.Contains("ScripNo")) continue;
+                //ScripNo,Exch,series,symbol,opttype,StrikePrice,ExpiryDate,MLot               
+
+                string[] arr = line.Split(',');
+                string ScripNo = arr[0];
+                string Exch = arr[1];
+                string series = arr[2];
+                string symbol = arr[3];
+                string opttype = arr[4];
+                string StrikePrice = arr[5];
+                string ExpiryDate = arr[6];
+                string MLot = arr[7];
+
+                SecurityMaster data = new SecurityMaster(ScripNo, Exch, series, symbol, opttype, StrikePrice, ExpiryDate, MLot);
+                dictSecurityMaster[ScripNo] = data;
+
+                // ScripNo -> Symbol -> Exch -> Series -> Expiry -> OptType -> Strike
+                
+            }
+        }
 
         public ScannerDashboard()
         {
-            connectionString = ConfigurationManager.ConnectionStrings["ConnStr"].ToString();
-            connectionString = @"Data Source=VPS104139\SQLEXPRESS;Initial Catalog=LPIntraDay;Persist Security Info=True;User ID=sa;Password=sa123";
+            //removeing the dependency from the db, so we can run Scanner from any machine
+            //connectionString = ConfigurationManager.ConnectionStrings["ConnStr"].ToString();
+            //connectionString = @"Data Source=VPS104139\SQLEXPRESS;Initial Catalog=LPIntraDay;Persist Security Info=True;User ID=sa;Password=sa123";           
+            //MySqlHelper.Initialize(connectionString);
 
-            MySqlHelper.Initialize(connectionString);
-
+            loadSecurityMaster();
+                        
             InitializeComponent();
         }
 

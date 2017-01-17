@@ -1,0 +1,6 @@
+select ScripNo, Exch, RTrim(Series) series, RTrim(Symbol) symbol ,RTrim(OptType) opttype,StrikePrice,ExpiryDate,MLot 
+from LPRELIABLEMAP.dbo.FAOMaster 
+Where series in ('FUTSTK', 'OPTSTK', 'FUTIDX', 'OPTIDX')
+order by Exch,symbol, ExpiryDate, StrikePrice
+
+delete expiry with " 00:00:00" from the output query

@@ -356,7 +356,8 @@ int main(int argc, char *argv[])
 
 	void *context = zmq_ctx_new();
 	void *publisher = zmq_socket(context, ZMQ_PUB);
-	int rc = zmq_bind(publisher, "tcp://127.0.0.1:5551");
+	//int rc = zmq_bind(publisher, "tcp://127.0.0.1:5551");
+	int rc = zmq_bind(publisher, "tcp://158.69.193.253:5551");
 	if (rc != 0) {
 		strerror_s(errorStr, errno);
 		std::cout << errno << " [" << errorStr << "] " << std::endl;

@@ -35,6 +35,7 @@ namespace ScannerWindowApplication
         public int OrderNo;
         public int methodID;
         public float price;
+        public int strike;
         public float quantity;
         public char direction;
         public int version;
@@ -42,6 +43,12 @@ namespace ScannerWindowApplication
         public char[] OrderStatus;
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 8)]
         public char[] symbol;
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 8)]
+        public char[] expiry;
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 2)]
+        public char[] callput;
+        [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 3)]
+        public char[] exch;
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 36)]
         public char[] machineID;
         [MarshalAsAttribute(UnmanagedType.ByValArray, SizeConst = 36)]
@@ -55,9 +62,13 @@ namespace ScannerWindowApplication
             ID = 0;
             OrderNo = 0;
             price = 0;
+            strike = 0;
             quantity = 0;
             direction = '\0';
             version = 0;
+            expiry = new char[8];
+            callput = new char[2];
+            exch = new char[3];
             machineID = new char[36];
             userID = new char[36];
         }
@@ -71,11 +82,18 @@ namespace ScannerWindowApplication
             Console.WriteLine("OrderNo : {0}", OrderNo);
             Console.WriteLine("version : {0}", version);
             Console.WriteLine("price : {0}", price);
+            Console.WriteLine("strike : {0}", strike);
             Console.WriteLine("quantity : {0}", quantity);
             Console.WriteLine("direction : {0}", direction);
+            Console.WriteLine("callput : {0}", new string(callput));
+            Console.WriteLine("exch : {0}", new string(exch));
             Console.WriteLine("machineID : {0}", new string(machineID));
             Console.WriteLine("userID : {0}", new string(userID));
         }
     };
 
+    public enum RequestType
+    {
+        INS, AMD, CAN, UNK
+    };
 }

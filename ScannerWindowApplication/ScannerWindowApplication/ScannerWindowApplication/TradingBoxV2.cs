@@ -31,18 +31,23 @@ namespace ScannerWindowApplication
 
         private void TradingBoxV2_Load(object sender, EventArgs e)
         {
-            var query = "select distinct symbol from LPINTRADAY.dbo.vwFeed where symbol in ('NIFTY','BANKNIFTY','RELIANCE','SBIN','RCOM','AXISBANK','LT','INFY','DLF','SUNPHARMA') order by symbol asc";
-            var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
+            //var query = "select distinct symbol from LPINTRADAY.dbo.vwFeed where symbol in ('NIFTY','BANKNIFTY','RELIANCE','SBIN','RCOM','AXISBANK','LT','INFY','DLF','SUNPHARMA') order by symbol asc";
+            //var ohlcdt = MySqlHelper.Instance.GetDataTable(query);
 
-            DataRow curRow;
+            //DataRow curRow;
 
-            for (var i = 0; i < ohlcdt.Rows.Count; i++)
-            {
-                curRow = ohlcdt.Rows[i];
-                cmbStocksSymbol.Items.Add(curRow[0].ToString().Trim());
-                cmbFuturesSymbol.Items.Add(curRow[0].ToString().Trim());
-                cmbOptionsSymbol.Items.Add(curRow[0].ToString().Trim());
-            }
+            //for (var i = 0; i < ohlcdt.Rows.Count; i++)
+            //{
+            //    curRow = ohlcdt.Rows[i];
+            //    cmbStocksSymbol.Items.Add(curRow[0].ToString().Trim());
+            //    cmbFuturesSymbol.Items.Add(curRow[0].ToString().Trim());
+            //    cmbOptionsSymbol.Items.Add(curRow[0].ToString().Trim());
+            //}
+
+            var symbolList = ScannerDashboard.dictSecurityMaster.Select(x => x.Value.symbol).Distinct().ToList();
+            cmbStocksSymbol.Items.AddRange(symbolList.ToArray());
+            cmbFuturesSymbol.Items.AddRange(symbolList.ToArray());
+            cmbOptionsSymbol.Items.AddRange(symbolList.ToArray());
 
             string[] keyarr = feedkey.Split(',');
 
@@ -170,6 +175,20 @@ namespace ScannerWindowApplication
 
         public void loadExpiry(String symbol, String exch)
         {
+
+            if (exch == "NFO")
+            {
+                cmbFuturesExpiry.Items.Clear();
+                var expiryList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch).Select(x => x.Value.expiry).Distinct().ToList();
+                cmbFuturesExpiry.Items.AddRange(expiryList.ToArray());
+            }
+            else
+            {
+                cmbOptionsExpiry.Items.Clear();
+                var expiryList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.exch == exch).Select(x => x.Value.expiry).Distinct().ToList();
+                cmbOptionsExpiry.Items.AddRange(expiryList.ToArray());
+            }
+            /*
             //var symbol = cmbFuturesSymbol.SelectedItem.ToString();
 
             var query = "select distinct CONVERT(VARCHAR(10),ExpiryDate,105) expDate from LPINTRADAY.dbo.vwFeed where symbol = '" + symbol + "' and exch = '" + exch  + "'";
@@ -196,11 +215,17 @@ namespace ScannerWindowApplication
                 else if (exch == "NOP")
                     cmbOptionsExpiry.Items.Add(dt1.ToString("yyyy-MM-dd"));
             }
-
+            */
         }
 
         public void loadStrike(String symbol, String Expiry, String opttype)
         {
+            cmbOptionsStrike.Items.Clear();
+            var strikeList = ScannerDashboard.dictSecurityMaster.Where(x => x.Value.symbol == symbol && x.Value.expiry == Expiry && x.Value.opttype == opttype).Select(x => x.Value.strike).Distinct().ToList();
+            cmbOptionsStrike.Items.AddRange(strikeList.ToArray());
+            
+
+            /*
             DateTime dt1 = DateTime.ParseExact(Expiry, "yyyy-MM-dd", CultureInfo.InvariantCulture);
 
             var query = "select distinct strikePrice from LPINTRADAY.dbo.vwFeed where symbol = '"
@@ -221,18 +246,22 @@ namespace ScannerWindowApplication
                 curRow = ohlcdt.Rows[i];
                 cmbOptionsStrike.Items.Add(curRow[0].ToString());
             }
-
+            */
         }
 
         private void btnFuturesBuy_Click(object sender, EventArgs e)
         {
             string symbol = cmbFuturesSymbol.SelectedItem.ToString();
-
+            
+            DateTime oExpiryDate = DateTime.ParseExact(cmbFuturesExpiry.SelectedItem.ToString(), "yyyy-MM-dd", null);
+            string expiry = oExpiryDate.ToString("yyyyMMdd");
+            
             double price = Convert.ToDouble(txtFuturesLimit.Text);
+
             int qty = Convert.ToInt32(txtFuturesQty.Text);
             char action = 'B';
             
-            OrderClient.insertOrder(symbol, price, qty, action, this);
+            OrderClient.insertOrder(symbol,expiry, "","NFO", "0", price, qty, action, this);
         }
 
         
@@ -240,33 +269,46 @@ namespace ScannerWindowApplication
         {
             string symbol = cmbFuturesSymbol.SelectedItem.ToString();
 
+            DateTime oExpiryDate = DateTime.ParseExact(cmbFuturesExpiry.SelectedItem.ToString(), "yyyy-MM-dd", null);
+            string expiry = oExpiryDate.ToString("yyyyMMdd");
+
             double price = Convert.ToDouble(txtFuturesLimit.Text);
             int qty = Convert.ToInt32(txtFuturesQty.Text);
             char action = 'S';
 
-            OrderClient.insertOrder(symbol, price, qty, action, this);
+            OrderClient.insertOrder(symbol, expiry, "", "NFO", "0", price, qty, action, this);
         }
 
         private void btnBuy_Click(object sender, EventArgs e)
         {
             string symbol = cmbOptionsSymbol.SelectedItem.ToString();
 
+            DateTime oExpiryDate = DateTime.ParseExact(cmbFuturesExpiry.SelectedItem.ToString(), "dd-MM-yyyy", null);
+            string expiry = oExpiryDate.ToString("yyyyMMdd");
+            string callput = cmbOptionsCallPut.SelectedItem.ToString();
+            string strike = cmbOptionsStrike.SelectedItem.ToString();
+
             double price = Convert.ToDouble(txtOptionsPrice.Text);
             int qty = Convert.ToInt32(txtOptionsQty.Text);
             char action = 'B';
 
-            OrderClient.insertOrder(symbol, price, qty, action, this);
+            OrderClient.insertOrder(symbol, expiry, callput, "NOP", strike, price, qty, action, this);
         }
 
         private void btnSell_Click(object sender, EventArgs e)
         {
             string symbol = cmbOptionsSymbol.SelectedItem.ToString();
 
+            DateTime oExpiryDate = DateTime.ParseExact(cmbFuturesExpiry.SelectedItem.ToString(), "dd-MM-yyyy", null);
+            string expiry = oExpiryDate.ToString("yyyyMMdd");
+            string callput = cmbOptionsCallPut.SelectedItem.ToString();
+            string strike = cmbOptionsStrike.SelectedItem.ToString();
+
             double price = Convert.ToDouble(txtOptionsPrice.Text);
             int qty = Convert.ToInt32(txtOptionsQty.Text);
             char action = 'S';
 
-            OrderClient.insertOrder(symbol, price, qty, action, this);
+            OrderClient.insertOrder(symbol, expiry, callput, "NOP", strike, price, qty, action, this);
         }
 
         private void cmbFuturesExpiry_SelectedIndexChanged(object sender, EventArgs e)
@@ -329,36 +371,88 @@ namespace ScannerWindowApplication
 
         private void splitContainer1_Panel1_DragDrop(object sender, DragEventArgs e)
         {
-            if (e.Data.GetDataPresent(typeof(DataRowView)))
+            if (e.Data.GetDataPresent(typeof(DataRowView)) || e.Data.GetDataPresent(typeof(string)))
             {
                 // Determine which category the item was draged to                
                 {
                     // Get references to the category and campaign
-                    DataRowView dataRow = (DataRowView)e.Data.GetData(typeof(DataRowView));
-                    string symbol = (string)dataRow[1];
-                    string expiry = (string)dataRow[2];
-                    string strike = (string)dataRow[3];
-                    string callput = (string)dataRow[4];
-                    string exch = (string)dataRow[5];
+                    string symbol = "";
+                    string expiry = "";
+                    string strike = "";
+                    string callput = "";
+                    string exch = "";
+
+                    if (e.Data.GetDataPresent(typeof(DataRowView)))
+                    {
+                        DataRowView dataRow = (DataRowView)e.Data.GetData(typeof(DataRowView));
+                        symbol = (string)dataRow[1];
+                        expiry = (string)dataRow[2];
+                        strike = (string)dataRow[3];
+                        callput = (string)dataRow[4];
+                        exch = (string)dataRow[5];
+                    }
+                    else if(e.Data.GetDataPresent(typeof(string)))
+                    {
+                        string rowString = (string)e.Data.GetData(typeof(string));
+                        string[] dataRow = rowString.Split(',');
+                        
+                        symbol = (string)dataRow[0];
+                        expiry = (string)dataRow[1];
+                        strike = (string)dataRow[2];
+                        callput = (string)dataRow[3];
+                        exch = (string)dataRow[4];
+                    }
 
                     if (exch == "NFO")
                     {
+                        cmbFuturesSymbol.SelectedItem = symbol;
+                        loadExpiry(symbol, "NFO");
+                        cmbFuturesExpiry.SelectedItem = expiry;
+
+                        cmbOptionsStrike.Items.Clear();
+                        cmbOptionsCallPut.Items.Clear();
+                        cmbOptionsExpiry.Items.Clear();
+                        cmbOptionsSymbol.Items.Clear();
+
+                        cmbOptionsStrike.Text = "";
+                        cmbOptionsCallPut.Text = "";
+                        cmbOptionsExpiry.Text = "";
+                        cmbOptionsSymbol.Text = "";
+
+                        txtOptionsChange.Text = "";
+                        txtOptionsPercentChange.Text = "";
+                        txtOptionsAskSize.Text = "";
+                        txtOptionsAskPrice.Text = "";
+                        txtOptionsBidPrice.Text = "";
+                        txtOptionsBidSize.Text = "";
+
                         strike = "0";
                         callput = "";
                         exch = "NFO";
                         this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
-
-                        cmbFuturesSymbol.SelectedItem = symbol;
-                        loadExpiry(symbol, "NFO");
-                        cmbFuturesSymbol.SelectedItem = expiry;
-
+                        
                         futopt = 1;
                         tabControl1.SelectedIndex = 1;
                     }
                     else if (exch == "NOP")
                     {
-                        this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
+                        cmbFuturesExpiry.Items.Clear();
+                        cmbFuturesSymbol.Items.Clear();
+                        cmbFuturesExpiry.Text = "";
+                        cmbFuturesSymbol.Text = "";
 
+                        txtFuturesChange.Text = "";
+                        txtFuturesClose.Text = "";
+                        txtFuturesHigh.Text = "";
+                        txtFuturesLast.Text = "";
+                        txtFuturesLimit.Text = "";
+                        txtFuturesLow.Text = "";
+                        txtFuturesOpen.Text = "";
+                        txtFuturesPercentChange.Text = "";
+                        txtFuturesVolume.Text = "";
+
+                        this.feedkey = symbol + "," + expiry + "," + strike + "," + callput + "," + exch;
+                        
                         cmbOptionsSymbol.SelectedItem = symbol;
                         cmbOptionsExpiry.SelectedItem = expiry;
                         cmbOptionsCallPut.SelectedItem = callput;
@@ -373,6 +467,12 @@ namespace ScannerWindowApplication
                     }
                 }
             }
+        }
+             
+
+        private void tabControl1_MouseDown(object sender, MouseEventArgs e)
+        {
+            tabControl1.DoDragDrop(feedkey, DragDropEffects.Copy);
         }
     }
 }
